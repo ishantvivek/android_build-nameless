@@ -178,7 +178,6 @@ else
 ifneq ($(KERNEL_TOOLCHAIN_PREFIX),)
 KERNEL_TOOLCHAIN_PATH := $(KERNEL_TOOLCHAIN)/$(KERNEL_TOOLCHAIN_PREFIX)
 endif
-KERNEL_TOOLCHAIN := $(ANDROID_BUILD_TOP)/$(KERNEL_TOOLCHAIN)
 endif
 
 ifneq ($(USE_CCACHE),)
@@ -187,7 +186,11 @@ ifneq ($(USE_CCACHE),)
     ccache := $(strip $(wildcard $(ccache)))
 endif
 
-KERNEL_CROSS_COMPILE := CROSS_COMPILE="$(ccache) $(KERNEL_TOOLCHAIN_PATH)"
+ifneq ($(TARGET_KERNEL_CUSTOM_TOOLCHAIN),)     
+    KERNEL_CROSS_COMPILE := CROSS_COMPILE="$(ccache) $(ANDROID_BUILD_TOP)/prebuilts/gcc/linux-x86/arm/$(TARGET_KERNEL_CUSTOM_TOOLCHAIN)/bin/arm-eabi-"      
+else
+	KERNEL_CROSS_COMPILE := CROSS_COMPILE="$(ccache) $(KERNEL_TOOLCHAIN_PATH)"
+endif
 ccache =
 
 define mv-modules
